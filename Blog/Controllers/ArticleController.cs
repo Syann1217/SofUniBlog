@@ -25,6 +25,7 @@ namespace Blog.Controllers
                 //Get articles from database
                 var articles = database.Articles
                     .Include(a => a.Author)
+                    .Include(a => a.Tags)
                     .ToList();
 
                 return View(articles);
@@ -44,6 +45,7 @@ namespace Blog.Controllers
                 var article = database.Articles
                     .Where(a => a.Id == id)
                     .Include(a => a.Author)
+                    .Include(a => a.Tags)
                     .First();
 
                 if (article == null)
@@ -89,6 +91,8 @@ namespace Blog.Controllers
 
                     var article = new Article(authorId, model.Title, model.Content, model.CategoryId);
 
+                    this.SetArticleTags(article, model, database);
+
                     //Save article in DB
                     database.Articles.Add(article);
                     database.SaveChanges();
@@ -113,6 +117,7 @@ namespace Blog.Controllers
                 var article = database.Articles
                     .Where(a => a.Id == id)
                     .Include(a => a.Author)
+                    .Include(a => a.Category)
                     .First();
 
                 //Check if user is authorized to delete
@@ -120,6 +125,8 @@ namespace Blog.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
                 }
+
+                ViewBag.TagsStrings = string.Join(", ", article.Tags.Select(t => t.Name));
 
                 //Check if article exists
                 if (article == null)
@@ -199,6 +206,8 @@ namespace Blog.Controllers
                     .OrderBy(c => c.Name)
                     .ToList();
 
+                model.Tags = string.Join(", ", article.Tags.Select(t => t.Name));
+
                 //pass the view model to view
                 return View(model);
             }
@@ -220,6 +229,7 @@ namespace Blog.Controllers
                     article.Title = model.Title;
                     article.Content = model.Content;
                     article.CategoryId = model.CategoryId;
+                    this.SetArticleTags(article, model, database);
                     //save article state in database
                     database.Entry(article).State = EntityState.Modified;
                     database.SaveChanges();
@@ -229,6 +239,35 @@ namespace Blog.Controllers
             }
             //if model state is invalid return the same view
             return View(model);
+        }
+
+        private void SetArticleTags(Article article, ArticleViewModel model, BlogDbContext database)
+        {
+            //Split Tags
+            var tagsStrings = model.Tags
+                 .Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                 .Select(t => t.ToLower())
+                 .Distinct();
+
+            //Clear all current article tags
+            article.Tags.Clear();
+
+            //Set new article tags
+            foreach (var tagString in tagsStrings)
+            {
+                //Get tag from the database by its name
+                Tag tag = database.Tags.FirstOrDefault(t => t.Name.Equals(tagString));
+
+                //If the tag is null create new tag
+                if (tag == null)
+                {
+                    tag = new Tag() { Name = tagString };
+                    database.Tags.Add(tag);
+                }
+
+                //Add tags to article tags
+                article.Tags.Add(tag);
+            }
         }
 
         private bool IsUserAuthorizedToEdit (Article article)
