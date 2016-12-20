@@ -1,9 +1,7 @@
 ﻿@model List<Blog.Models.Article>
-
 @{
     ViewBag.Title = "List";
 }
-
 <div class="container">
     <div class="row">
         @foreach (var article in Model)
@@ -22,11 +20,7 @@
                         <div class="pull-left">
                             @foreach (var tag in article.Tags)
                             {
-<<<<<<< HEAD
                                 <span>@Html.ActionLink(tag.Name, "List", "Tag", new { @id = tag.Id }, new { @class = "btn btn-default btn-xs" })</span>
-=======
-                                @Html.ActionLink(tag.Name, "List", "Tag", new { @id = tag.Id }, new { @class = "btn btn-default btn-xs" })
->>>>>>> origin/master
                             }
                         </div>
                         <small class="author pull-right">
