@@ -23,10 +23,14 @@
                             @foreach (var tag in article.Tags)
                             {
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 <span>@Html.ActionLink(tag.Name, "List", "Tag", new { @id = tag.Id }, new { @class = "btn btn-default btn-xs" })</span>
 =======
                                 @Html.ActionLink(tag.Name, "List", "Tag", new { @id = tag.Id }, new { @class = "btn btn-default btn-xs" })
 >>>>>>> origin/master
+=======
+                                @Html.ActionLink(tag.Name, "List", "Tag", new { @id = tag.Id }, new { @class = "btn btn-default btn-xs" })
+>>>>>>> 6219a984963198a664194fc1480a080dd436a592
                             }
                         </div>
                         <small class="author pull-right">

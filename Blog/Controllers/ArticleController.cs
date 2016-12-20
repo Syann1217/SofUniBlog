@@ -119,9 +119,12 @@ namespace Blog.Controllers
                     .Include(a => a.Author)
                     .Include(a => a.Category)
 <<<<<<< HEAD
+<<<<<<< HEAD
                     .Include(a => a.Tags)
 =======
 >>>>>>> origin/master
+=======
+>>>>>>> 6219a984963198a664194fc1480a080dd436a592
                     .First();
 
                 //Check if user is authorized to delete
@@ -131,10 +134,14 @@ namespace Blog.Controllers
                 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
                 ViewBag.TagsString = string.Join(", ", article.Tags.Select(t => t.Name));
 =======
                 ViewBag.TagsStrings = string.Join(", ", article.Tags.Select(t => t.Name));
 >>>>>>> origin/master
+=======
+                ViewBag.TagsStrings = string.Join(", ", article.Tags.Select(t => t.Name));
+>>>>>>> 6219a984963198a664194fc1480a080dd436a592
 
                 //Check if article exists
                 if (article == null)
