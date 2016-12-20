@@ -19,4 +19,8 @@ namespace Blog.Models
 
         public IList<Role> Roles { get; set; }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/master
