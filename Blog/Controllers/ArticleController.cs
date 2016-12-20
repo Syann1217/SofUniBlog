@@ -59,13 +59,22 @@ namespace Blog.Controllers
         [Authorize]
         public ActionResult Create()
         {
-            return View();
+
+            using (var database = new BlogDbContext())
+            {
+                var model = new ArticleViewModel();
+                model.Categories = database.Categories
+                    .OrderBy(c => c.Name)
+                    .ToList();
+                return View(model);
+            }
+                
         }
 
         //POST: Article/Create
         [HttpPost]
         [Authorize]
-        public ActionResult Create(Article article)
+        public ActionResult Create(ArticleViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -78,8 +87,7 @@ namespace Blog.Controllers
                         .First()
                         .Id;
 
-                    //Set articles author
-                    article.AuthorId = authorId;
+                    var article = new Article(authorId, model.Title, model.Content, model.CategoryId);
 
                     //Save article in DB
                     database.Articles.Add(article);
@@ -88,7 +96,7 @@ namespace Blog.Controllers
                     return RedirectToAction("Index");
                 }
             }
-            return View(article);
+            return View(model);
         }
 
         //GET: Article/Delete
@@ -106,11 +114,13 @@ namespace Blog.Controllers
                     .Where(a => a.Id == id)
                     .Include(a => a.Author)
                     .First();
+
                 //Check if user is authorized to delete
                 if (! IsUserAuthorizedToEdit(article))
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
                 }
+
                 //Check if article exists
                 if (article == null)
                 {
@@ -137,14 +147,17 @@ namespace Blog.Controllers
                     .Where(a => a.Id == id)
                     .Include(a => a.Author)
                     .First();
+
                 //check if article exists
                 if(article == null)
                 {
                     return HttpNotFound();
                 }
+
                 //delete article from database
                 database.Articles.Remove(article);
                 database.SaveChanges();
+
                 //redirect to index page
                 return RedirectToAction("Index");
             }
@@ -164,7 +177,7 @@ namespace Blog.Controllers
                     .Where(a => a.Id == id)
                     .First();
 
-                //Check if user is authorized to delete
+                //Check if user is authorized to edit
                 if (!IsUserAuthorizedToEdit(article))
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
@@ -181,6 +194,10 @@ namespace Blog.Controllers
                 model.Id = article.Id;
                 model.Title = article.Title;
                 model.Content = article.Content;
+                model.CategoryId = article.CategoryId;
+                model.Categories = database.Categories
+                    .OrderBy(c => c.Name)
+                    .ToList();
 
                 //pass the view model to view
                 return View(model);
@@ -202,6 +219,7 @@ namespace Blog.Controllers
                     //set article properties
                     article.Title = model.Title;
                     article.Content = model.Content;
+                    article.CategoryId = model.CategoryId;
                     //save article state in database
                     database.Entry(article).State = EntityState.Modified;
                     database.SaveChanges();
