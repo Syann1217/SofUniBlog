@@ -44,9 +44,10 @@ namespace Blog.Models
 
         public virtual ApplicationUser Author { get; set; }
 
-
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
+
+        public int Views { get; set; }
 
         public virtual Category Category { get; set; }
 

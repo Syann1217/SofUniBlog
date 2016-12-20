@@ -32,6 +32,10 @@
                     @Html.ActionLink("Delete", "Delete", "Article", new { @id = Model.Id }, new { @class = "btn btn-danger btn-xs" })
                 }
                 @Html.ActionLink("Back", "Index", "Article", null, new { @class = "btn btn-default btn-xs" })
+                <br />
+                <small class="author">
+                    Views: @Model.Views
+                </small>
             </div>
         </footer>
     </article>
